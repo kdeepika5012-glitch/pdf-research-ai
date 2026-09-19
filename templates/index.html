@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>PDF Mind AI</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+
+            font-family:
+                Inter,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    circle at top left,
+                    #29346f 0,
+                    transparent 35%
+                ),
+                radial-gradient(
+                    circle at bottom right,
+                    #174b50 0,
+                    transparent 35%
+                ),
+                #070b17;
+
+            color: #ffffff;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 20px;
+        }
+
+        .app {
+
+            width: 100%;
+
+            max-width: 1200px;
+
+            height: 90vh;
+
+            min-height: 650px;
+
+            display: grid;
+
+            grid-template-columns:
+                320px 1fr;
+
+            overflow: hidden;
+
+            border:
+                1px solid
+                rgba(255,255,255,0.12);
+
+            border-radius: 28px;
+
+            background:
+                rgba(12,17,32,0.90);
+
+            backdrop-filter:
+                blur(25px);
+
+            box-shadow:
+                0 30px 100px
+                rgba(0,0,0,0.55);
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+
+            padding: 28px;
+
+            border-right:
+                1px solid
+                rgba(255,255,255,0.08);
+
+            background:
+                rgba(255,255,255,0.025);
+
+            display: flex;
+
+            flex-direction: column;
+        }
+
+        .brand {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 32px;
+        }
+
+        .logo {
+
+            width: 46px;
+
+            height: 46px;
+
+            border-radius: 15px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 22px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7c5cff,
+                    #26d0ce
+                );
+
+            box-shadow:
+                0 8px 30px
+                rgba(124,92,255,0.35);
+        }
+
+        .brand h1 {
+
+            font-size: 20px;
+
+            letter-spacing: -0.5px;
+        }
+
+        .brand span {
+
+            display: block;
+
+            color: #8992aa;
+
+            font-size: 11px;
+
+            margin-top: 3px;
+        }
+
+        .upload-box {
+
+            border:
+                1px dashed
+                rgba(255,255,255,0.2);
+
+            border-radius: 20px;
+
+            padding: 22px;
+
+            text-align: center;
+
+            background:
+                rgba(255,255,255,0.025);
+
+            transition: 0.25s;
+        }
+
+        .upload-box:hover {
+
+            border-color: #7c5cff;
+
+            background:
+                rgba(124,92,255,0.06);
+        }
+
+        .upload-icon {
+
+            font-size: 34px;
+
+            margin-bottom: 12px;
+        }
+
+        .upload-box h3 {
+
+            font-size: 15px;
+
+            margin-bottom: 6px;
+        }
+
+        .upload-box p {
+
+            font-size: 12px;
+
+            color: #8e97ad;
+
+            line-height: 1.5;
+
+            margin-bottom: 16px;
+        }
+
+        .upload-btn {
+
+            width: 100%;
+
+            border: none;
+
+            border-radius: 12px;
+
+            padding: 12px;
+
+            cursor: pointer;
+
+            color: white;
+
+            font-weight: 700;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7657ff,
+                    #3e9fff
+                );
+
+            transition: 0.2s;
+        }
+
+        .upload-btn:hover {
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 10px 30px
+                rgba(91,91,255,0.25);
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .document-card {
+
+            margin-top: 20px;
+
+            padding: 16px;
+
+            border-radius: 16px;
+
+            background:
+                rgba(255,255,255,0.045);
+
+            display: none;
+        }
+
+        .document-card.active {
+            display: block;
+        }
+
+        .doc-title {
+
+            font-size: 12px;
+
+            color: #929bb2;
+
+            margin-bottom: 8px;
+        }
+
+        .doc-name {
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            word-break: break-word;
+        }
+
+        .doc-status {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            margin-top: 10px;
+
+            font-size: 11px;
+
+            color: #72e6a2;
+        }
+
+        .green-dot {
+
+            width: 7px;
+
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #54e48b;
+
+            box-shadow:
+                0 0 12px
+                #54e48b;
+        }
+
+        .info {
+
+            margin-top: auto;
+
+            color: #6f7890;
+
+            font-size: 11px;
+
+            line-height: 1.7;
+        }
+
+        /* MAIN */
+
+        .main {
+
+            display: flex;
+
+            flex-direction: column;
+
+            min-width: 0;
+        }
+
+        .topbar {
+
+            padding: 24px 28px;
+
+            border-bottom:
+                1px solid
+                rgba(255,255,255,0.07);
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+        }
+
+        .top-title {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 4px;
+        }
+
+        .top-title h2 {
+            font-size: 17px;
+        }
+
+        .top-title p {
+
+            color: #858da3;
+
+            font-size: 12px;
+        }
+
+        .online {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            font-size: 11px;
+
+            color: #7ee9a5;
+
+            padding: 8px 12px;
+
+            border-radius: 30px;
+
+            background:
+                rgba(83,224,139,0.08);
+        }
+
+        .online-dot {
+
+            width: 7px;
+
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #57e48b;
+        }
+
+        /* CHAT */
+
+        .chat {
+
+            flex: 1;
+
+            overflow-y: auto;
+
+            padding: 28px;
+
+            scroll-behavior: smooth;
+        }
+
+        .welcome {
+
+            height: 100%;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+
+            align-items: center;
+
+            text-align: center;
+
+            max-width: 650px;
+
+            margin: auto;
+        }
+
+        .welcome-orb {
+
+            width: 82px;
+
+            height: 82px;
+
+            border-radius: 28px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 35px;
+
+            margin-bottom: 22px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7d5cff,
+                    #21c7c7
+                );
+
+            box-shadow:
+                0 20px 60px
+                rgba(84,86,255,0.3);
+        }
+
+        .welcome h2 {
+
+            font-size: 28px;
+
+            letter-spacing: -1px;
+
+            margin-bottom: 10px;
+        }
+
+        .welcome p {
+
+            color: #8790a8;
+
+            font-size: 13px;
+
+            line-height: 1.7;
+
+            max-width: 470px;
+        }
+
+        .hint {
+
+            margin-top: 20px;
+
+            padding: 12px 18px;
+
+            border-radius: 12px;
+
+            color: #aab2c6;
+
+            font-size: 11px;
+
+            background:
+                rgba(255,255,255,0.035);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.06);
+        }
+
+        .message {
+
+            display: flex;
+
+            margin-bottom: 22px;
+        }
+
+        .message.user {
+
+            justify-content: flex-end;
+        }
+
+        .bubble {
+
+            max-width: 75%;
+
+            padding: 14px 17px;
+
+            border-radius: 18px;
+
+            font-size: 13px;
+
+            line-height: 1.65;
+
+            white-space: pre-wrap;
+        }
+
+        .user .bubble {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7057ff,
+                    #486fff
+                );
+
+            border-bottom-right-radius: 5px;
+        }
+
+        .bot .bubble {
+
+            background:
+                rgba(255,255,255,0.055);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.07);
+
+            border-bottom-left-radius: 5px;
+
+            color: #dce1ed;
+        }
+
+        /* INPUT */
+
+        .composer {
+
+            padding:
+                20px 28px 25px;
+
+            border-top:
+                1px solid
+                rgba(255,255,255,0.07);
+        }
+
+        .input-wrap {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 7px;
+
+            border-radius: 17px;
+
+            border:
+                1px solid
+                rgba(255,255,255,0.1);
+
+            background:
+                rgba(255,255,255,0.035);
+
+            transition: 0.2s;
+        }
+
+        .input-wrap:focus-within {
+
+            border-color:
+                rgba(124,92,255,0.65);
+
+            box-shadow:
+                0 0 0 4px
+                rgba(124,92,255,0.07);
+        }
+
+        #question {
+
+            flex: 1;
+
+            border: none;
+
+            outline: none;
+
+            resize: none;
+
+            background: transparent;
+
+            color: white;
+
+            font-family: inherit;
+
+            font-size: 13px;
+
+            padding: 10px;
+
+            max-height: 100px;
+        }
+
+        #question::placeholder {
+
+            color: #626b81;
+        }
+
+        .send-btn {
+
+            width: 42px;
+
+            height: 42px;
+
+            border: none;
+
+            border-radius: 13px;
+
+            cursor: pointer;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7658ff,
+                    #318fff
+                );
+
+            font-size: 17px;
+
+            transition: 0.2s;
+        }
+
+        .send-btn:hover {
+
+            transform: scale(1.04);
+        }
+
+        .send-btn:disabled {
+
+            opacity: 0.4;
+
+            cursor: not-allowed;
+        }
+
+        .footer-note {
+
+            text-align: center;
+
+            color: #505a70;
+
+            font-size: 10px;
+
+            margin-top: 10px;
+        }
+
+        /* TYPING */
+
+        .typing {
+
+            display: flex;
+
+            gap: 5px;
+
+            align-items: center;
+        }
+
+        .typing span {
+
+            width: 6px;
+
+            height: 6px;
+
+            border-radius: 50%;
+
+            background: #9099af;
+
+            animation:
+                bounce 1.2s infinite;
+        }
+
+        .typing span:nth-child(2) {
+
+            animation-delay: 0.15s;
+        }
+
+        .typing span:nth-child(3) {
+
+            animation-delay: 0.3s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+            }
+
+            30% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 800px) {
+
+            .app {
+
+                height: 94vh;
+
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .bubble {
+                max-width: 88%;
+            }
+
+            .welcome h2 {
+                font-size: 23px;
+            }
+
+            .topbar,
+            .chat,
+            .composer {
+
+                padding-left: 18px;
+
+                padding-right: 18px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="logo">
+                ✦
+            </div>
+
+            <div>
+
+                <h1>PDF Mind AI</h1>
+
+                <span>
+                    PDF Intelligence • RAG
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="upload-box">
+
+            <div class="upload-icon">
+                📄
+            </div>
+
+            <h3>
+                Upload your PDF
+            </h3>
+
+            <p>
+                Upload a document and ask
+                questions about its content.
+            </p>
+
+            <input
+                type="file"
+                id="fileInput"
+                accept=".pdf"
+            >
+
+            <button
+                class="upload-btn"
+                onclick="
+                    document
+                    .getElementById('fileInput')
+                    .click()
+                "
+            >
+                + Choose PDF
+            </button>
+
+        </div>
+
+
+        <div
+            class="document-card"
+            id="documentCard"
+        >
+
+            <div class="doc-title">
+                CURRENT DOCUMENT
+            </div>
+
+            <div
+                class="doc-name"
+                id="documentName"
+            >
+                document.pdf
+            </div>
+
+            <div class="doc-status">
+
+                <span class="green-dot"></span>
+
+                Indexed & Ready
+
+            </div>
+
+        </div>
+
+
+        <div class="info">
+
+            <strong>
+                How it works
+            </strong>
+
+            <br>
+
+            PDF → Text → Chunks →
+            Embeddings → ChromaDB →
+            Retrieval → Gemini
+
+            <br><br>
+
+            Answers are generated only
+            from the uploaded PDF.
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <div class="top-title">
+
+                <h2>
+                    PDF Research Assistant
+                </h2>
+
+                <p>
+                    Ask questions about your uploaded document
+                </p>
+
+            </div>
+
+            <div class="online">
+
+                <span class="online-dot"></span>
+
+                AI Online
+
+            </div>
+
+        </header>
+
+
+        <section
+            class="chat"
+            id="chat"
+        >
+
+            <div
+                class="welcome"
+                id="welcome"
+            >
+
+                <div class="welcome-orb">
+                    ✦
+                </div>
+
+                <h2>
+                    Ask your PDF anything.
+                </h2>
+
+                <p>
+                    Upload a PDF and create a
+                    searchable knowledge space.
+                    I will answer questions using
+                    only the information in your PDF.
+                </p>
+
+                <div class="hint">
+
+                    Upload a PDF first →
+                    then ask your question
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- COMPOSER -->
+
+        <div class="composer">
+
+            <div class="input-wrap">
+
+                <textarea
+                    id="question"
+                    rows="1"
+                    placeholder="Ask something about your PDF..."
+                    disabled
+                ></textarea>
+
+                <button
+                    class="send-btn"
+                    id="sendBtn"
+                    disabled
+                    onclick="sendQuestion()"
+                >
+                    ↑
+                </button>
+
+            </div>
+
+            <div class="footer-note">
+
+                Answers are based only on
+                your uploaded PDF.
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+    const fileInput =
+        document.getElementById(
+            "fileInput"
+        );
+
+    const questionInput =
+        document.getElementById(
+            "question"
+        );
+
+    const sendBtn =
+        document.getElementById(
+            "sendBtn"
+        );
+
+    const chat =
+        document.getElementById(
+            "chat"
+        );
+
+    const welcome =
+        document.getElementById(
+            "welcome"
+        );
+
+    const documentCard =
+        document.getElementById(
+            "documentCard"
+        );
+
+    const documentName =
+        document.getElementById(
+            "documentName"
+        );
+
+
+    let pdfReady = false;
+
+
+    // =================================================
+    // PDF UPLOAD
+    // =================================================
+
+    fileInput.addEventListener(
+        "change",
+        async function() {
+
+            const file =
+                this.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            if (
+                !file.name
+                    .toLowerCase()
+                    .endsWith(".pdf")
+            ) {
+
+                alert(
+                    "Please select a PDF file."
+                );
+
+                return;
+            }
+
+            const formData =
+                new FormData();
+
+            formData.append(
+                "file",
+                file
+            );
+
+            documentName.textContent =
+                "Processing " +
+                file.name +
+                "...";
+
+            documentCard.classList.add(
+                "active"
+            );
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/upload",
+                        {
+                            method: "POST",
+                            body: formData
+                        }
+                    );
+
+                const data =
+                    await response.json();
+
+                if (!data.success) {
+
+                    alert(
+                        data.error ||
+                        "PDF upload failed."
+                    );
+
+                    documentCard.classList.remove(
+                        "active"
+                    );
+
+                    return;
+                }
+
+                pdfReady = true;
+
+                documentName.textContent =
+                    data.filename;
+
+                questionInput.disabled =
+                    false;
+
+                sendBtn.disabled =
+                    false;
+
+                questionInput.focus();
+
+                addBotMessage(
+                    `PDF uploaded successfully.
+
+I found ${data.pages} page(s) and created ${data.chunks} searchable chunks.
+
+You can now ask questions about this PDF.`
+                );
+
+            }
+            catch (error) {
+
+                console.error(error);
+
+                alert(
+                    "Could not upload the PDF."
+                );
+            }
+
+        }
+    );
+
+
+    // =================================================
+    // SEND QUESTION
+    // =================================================
+
+    async function sendQuestion() {
+
+        if (!pdfReady) {
+
+            addBotMessage(
+                "Please upload a PDF first."
+            );
+
+            return;
+        }
+
+        const question =
+            questionInput.value.trim();
+
+        if (!question) {
+            return;
+        }
+
+        addUserMessage(
+            question
+        );
+
+        questionInput.value = "";
+
+        sendBtn.disabled = true;
+
+        questionInput.disabled = true;
+
+        const loadingId =
+            showTyping();
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/chat",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            message:
+                                question
+                        })
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            removeTyping(
+                loadingId
+            );
+
+            if (data.reply) {
+
+                addBotMessage(
+                    data.reply
+                );
+
+            }
+            else {
+
+                addBotMessage(
+                    "I couldn't find an answer."
+                );
+            }
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+            removeTyping(
+                loadingId
+            );
+
+            addBotMessage(
+                "Something went wrong while processing your question."
+            );
+
+        }
+        finally {
+
+            sendBtn.disabled = false;
+
+            questionInput.disabled =
+                false;
+
+            questionInput.focus();
+        }
+    }
+
+
+    // =================================================
+    // ENTER
+    // =================================================
+
+    questionInput.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key === "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+                sendQuestion();
+            }
+        }
+    );
+
+
+    // =================================================
+    // USER MESSAGE
+    // =================================================
+
+    function addUserMessage(
+        text
+    ) {
+
+        if (welcome) {
+            welcome.remove();
+        }
+
+        const wrapper =
+            document.createElement(
+                "div"
+            );
+
+        wrapper.className =
+            "message user";
+
+        const bubble =
+            document.createElement(
+                "div"
+            );
+
+        bubble.className =
+            "bubble";
+
+        bubble.textContent =
+            text;
+
+        wrapper.appendChild(
+            bubble
+        );
+
+        chat.appendChild(
+            wrapper
+        );
+
+        scrollToBottom();
+    }
+
+
+    // =================================================
+    // BOT MESSAGE
+    // =================================================
+
+    function addBotMessage(
+        text
+    ) {
+
+        if (welcome) {
+            welcome.remove();
+        }
+
+        const wrapper =
+            document.createElement(
+                "div"
+            );
+
+        wrapper.className =
+            "message bot";
+
+        const bubble =
+            document.createElement(
+                "div"
+            );
+
+        bubble.className =
+            "bubble";
+
+        bubble.textContent =
+            text;
+
+        wrapper.appendChild(
+            bubble
+        );
+
+        chat.appendChild(
+            wrapper
+        );
+
+        scrollToBottom();
+    }
+
+
+    // =================================================
+    // TYPING
+    // =================================================
+
+    function showTyping() {
+
+        const id =
+            "typing-" +
+            Date.now();
+
+        const wrapper =
+            document.createElement(
+                "div"
+            );
+
+        wrapper.className =
+            "message bot";
+
+        wrapper.id = id;
+
+        const bubble =
+            document.createElement(
+                "div"
+            );
+
+        bubble.className =
+            "bubble";
+
+        bubble.innerHTML = `
+            <div class="typing">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        `;
+
+        wrapper.appendChild(
+            bubble
+        );
+
+        chat.appendChild(
+            wrapper
+        );
+
+        scrollToBottom();
+
+        return id;
+    }
+
+
+    // =================================================
+    // REMOVE TYPING
+    // =================================================
+
+    function removeTyping(id) {
+
+        const element =
+            document.getElementById(
+                id
+            );
+
+        if (element) {
+            element.remove();
+        }
+    }
+
+
+    // =================================================
+    // SCROLL
+    // =================================================
+
+    function scrollToBottom() {
+
+        chat.scrollTop =
+            chat.scrollHeight;
+    }
+
+</script>
+
+</body>
+
+</html>
